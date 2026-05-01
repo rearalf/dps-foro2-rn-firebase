@@ -1,33 +1,60 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { FontAwesomeFreeSolid } from "@react-native-vector-icons/fontawesome-free-solid";
+import { Tabs } from "expo-router";
+import { Text } from "react-native";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarActiveTintColor: "#1F7A6F",
+        tabBarInactiveTintColor: "#7B8794",
+        tabBarStyle: {
+          height: 86,
+          paddingBottom: 8,
+          paddingTop: 8,
+          borderTopWidth: 1,
+          borderTopColor: "#E3E8EF",
+          backgroundColor: "#FFFFFF",
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "700",
+        },
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="record"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Historial",
+          tabBarIcon: ({ color }) => (
+            <Text style={{ color, fontSize: 16 }}>
+              <FontAwesomeFreeSolid name="rotate-left" />
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="dashboard"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Dashboard",
+          tabBarIcon: ({ color }) => (
+            <Text style={{ color, fontSize: 16 }}>
+              {" "}
+              <FontAwesomeFreeSolid name="home" />
+            </Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color }) => (
+            <Text style={{ color, fontSize: 16 }}>
+              <FontAwesomeFreeSolid name="user" />
+            </Text>
+          ),
         }}
       />
     </Tabs>
