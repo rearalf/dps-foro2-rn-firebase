@@ -1,10 +1,36 @@
+import useSignUp from "@/hook/useSignup";
 import styles from "@/styles/signupStyles";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignupScreen() {
+  const {
+    name,
+    error,
+    googleError,
+    email,
+    isLoading,
+    loading,
+    googleLoading,
+    password,
+    confirmPassword,
+    setName,
+    setEmail,
+    setPassword,
+    setConfirmPassword,
+    handleCreateWithSignInEmailPassword,
+    handleSignInWithGoogle,
+  } = useSignUp();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -23,6 +49,8 @@ export default function SignupScreen() {
               placeholder="Tu nombre"
               placeholderTextColor="#8A8F99"
               style={styles.input}
+              value={name}
+              onChangeText={setName}
             />
           </View>
 
@@ -34,6 +62,8 @@ export default function SignupScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               style={styles.input}
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
 
@@ -44,6 +74,8 @@ export default function SignupScreen() {
               placeholderTextColor="#8A8F99"
               secureTextEntry
               style={styles.input}
+              value={password}
+              onChangeText={setPassword}
             />
           </View>
 
@@ -54,16 +86,44 @@ export default function SignupScreen() {
               placeholderTextColor="#8A8F99"
               secureTextEntry
               style={styles.input}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
           </View>
 
-          <Link href="/(tabs)/dashboard" asChild>
-            <Pressable style={styles.primaryButton}>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {googleError ? (
+            <Text style={styles.errorText}>{googleError}</Text>
+          ) : null}
+
+          <Pressable
+            style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+            onPress={handleCreateWithSignInEmailPassword}
+            disabled={isLoading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
               <Text style={styles.primaryButtonText}>
                 Crear cuenta y continuar
               </Text>
-            </Pressable>
-          </Link>
+            )}
+          </Pressable>
+
+          <Pressable
+            style={[styles.googleButton, isLoading && styles.buttonDisabled]}
+            onPress={handleSignInWithGoogle}
+            disabled={isLoading}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#e45733" />
+            ) : (
+              <Text style={styles.googleButtonText}>
+                <Ionicons name="logo-google" size={18} color={"#e45733"} />
+                {"   "}Continuar con Google
+              </Text>
+            )}
+          </Pressable>
 
           <View style={styles.footerLine}>
             <Text style={styles.footerText}>Ya tienes cuenta?</Text>

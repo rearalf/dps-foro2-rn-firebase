@@ -78,6 +78,29 @@ const styles = StyleSheet.create({
     color: "#0D5C8D",
     fontWeight: "700",
   },
+  googleButton: {
+    borderWidth: 1,
+    borderColor: "#D9DEE7",
+    borderRadius: 14,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  googleButtonText: {
+    color: "#e45733",
+    fontWeight: "700",
+    fontSize: 15,
+    alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  errorText: {
+    color: "#B42318",
+    fontSize: 13,
+    marginTop: 4,
+  },
 });
 
 export default styles;

@@ -1,3 +1,4 @@
+import useDashboard from "@/hook/useDashboard";
 import FontAwesomeFreeSolid from "@react-native-vector-icons/fontawesome-free-solid";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -37,22 +38,26 @@ const movements = [
 ];
 
 export default function DashboardScreen() {
+  const { user, handleLogout } = useDashboard();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Hola Valerias</Text>
+            <Text style={styles.greeting}>Hola, {user?.displayName}</Text>
             <Text style={styles.subtitle}>Resumen financiero de este mes</Text>
           </View>
-          <Link href="/login" style={styles.logoutLink}>
-            Cerrar sessión{" "}
-            <FontAwesomeFreeSolid
-              name="arrow-right-from-bracket"
-              color={styles.logoutLink.color}
-            />
-          </Link>
+          <Pressable onPress={handleLogout}>
+            <Text style={styles.logoutLink}>
+              Cerrar sessión{" "}
+              <FontAwesomeFreeSolid
+                name="arrow-right-from-bracket"
+                color={styles.logoutLink.color}
+              />
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.balanceCard}>

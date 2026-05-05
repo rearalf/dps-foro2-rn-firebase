@@ -31,6 +31,7 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/crashlytics",
+      "@react-native-google-signin/google-signin",
       "@react-native-vector-icons/material-icons",
       "@react-native-vector-icons/ionicons",
       "expo-router",

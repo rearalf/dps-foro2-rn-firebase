@@ -1,10 +1,22 @@
+import { auth } from "@/config/FirebaeConfig";
+import useAuthSessionStore from "@/store/useAuthSessionStore";
 import styles from "@/styles/profileStyles";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { signOut } from "firebase/auth";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PerfilTabScreen() {
+  const router = useRouter();
+  const clearSession = useAuthSessionStore((state) => state.clearSession);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    clearSession();
+    router.replace("/login");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -43,11 +55,9 @@ export default function PerfilTabScreen() {
           </Pressable>
         </View>
 
-        <Link href="/login" asChild>
-          <Pressable style={styles.logoutButton}>
-            <Text style={styles.logoutText}>Cerrar sesion</Text>
-          </Pressable>
-        </Link>
+        <Pressable style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar sesion</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
