@@ -2,48 +2,38 @@ import useDashboard from "@/hook/useDashboard";
 import FontAwesomeFreeSolid from "@react-native-vector-icons/fontawesome-free-solid";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "../../styles/dashboardStyles";
 
-const movements = [
-  {
-    id: "1",
-    title: "Supermercado",
-    type: "Gasto",
-    amount: "-$48.20",
-    color: "#C24747",
-  },
-  {
-    id: "2",
-    title: "Freelance",
-    type: "Ingreso",
-    amount: "+$320.00",
-    color: "#207E61",
-  },
-  {
-    id: "3",
-    title: "Transporte",
-    type: "Gasto",
-    amount: "-$12.40",
-    color: "#C24747",
-  },
-  {
-    id: "4",
-    title: "Sueldo",
-    type: "Ingreso",
-    amount: "+$1,250.00",
-    color: "#207E61",
-  },
-];
-
 export default function DashboardScreen() {
-  const { user, handleLogout } = useDashboard();
+  const {
+    user,
+    error,
+    isLoading,
+    transactions,
+    handleLogout,
+    handleGetTransaccionesRecientes,
+  } = useDashboard();
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleGetTransaccionesRecientes}
+          />
+        }
+      >
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Hola, {user?.displayName}</Text>
@@ -113,24 +103,33 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.listCard}>
-          {movements.map((item) => (
+          {transactions.map((item) => (
             <View key={item.id} style={styles.listItem}>
               <View>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text style={styles.itemType}>{item.type}</Text>
+                <Text style={styles.itemTitle}>{item.category}</Text>
+                <Text style={styles.itemType}>
+                  {item.type === "income" ? "Ingreso" : "Gasto"}
+                </Text>
               </View>
-              <Text style={[styles.itemAmount, { color: item.color }]}>
+              <Text
+                style={[
+                  styles.itemAmount,
+                  { color: item.type === "expense" ? "#C24747" : "#207E61" },
+                ]}
+              >
                 {item.amount}
               </Text>
             </View>
           ))}
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
       </ScrollView>
-      <Link href="/add-expense" asChild>
+      {/* <Link href="/add-expense" asChild>
         <Pressable style={styles.fabButton}>
           <Text style={styles.fabText}>+ Gasto</Text>
         </Pressable>
-      </Link>
+      </Link> */}
     </SafeAreaView>
   );
 }

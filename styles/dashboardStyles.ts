@@ -163,6 +163,11 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 15,
   },
+  errorText: {
+    color: "#B33131",
+    fontWeight: "600",
+    fontSize: 13,
+  },
 });
 
 export default styles;
