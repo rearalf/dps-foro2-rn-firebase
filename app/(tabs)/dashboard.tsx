@@ -18,8 +18,11 @@ export default function DashboardScreen() {
     error,
     isLoading,
     transactions,
+    formattedBalance,
+    formattedIncome,
+    formattedExpense,
     handleLogout,
-    handleGetTransaccionesRecientes,
+    handleGetRecentTransactions,
   } = useDashboard();
 
   return (
@@ -30,7 +33,7 @@ export default function DashboardScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
-            onRefresh={handleGetTransaccionesRecientes}
+            onRefresh={handleGetRecentTransactions}
           />
         }
       >
@@ -52,13 +55,13 @@ export default function DashboardScreen() {
 
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Balance actual</Text>
-          <Text style={styles.balanceAmount}>$2,845.30</Text>
+          <Text style={styles.balanceAmount}>{formattedBalance}</Text>
 
           <View style={styles.kpiRow}>
             <View style={styles.kpiBox}>
               <Text style={styles.kpiTitle}>Ingresos</Text>
               <Text style={[styles.kpiValue, styles.incomeColor]}>
-                +$3,120.00
+                +{formattedIncome}
               </Text>
             </View>
 
@@ -67,7 +70,7 @@ export default function DashboardScreen() {
             <View style={styles.kpiBox}>
               <Text style={styles.kpiTitle}>Gastos</Text>
               <Text style={[styles.kpiValue, styles.expenseColor]}>
-                -$274.70
+                -{formattedExpense}
               </Text>
             </View>
           </View>
@@ -117,7 +120,11 @@ export default function DashboardScreen() {
                   { color: item.type === "expense" ? "#C24747" : "#207E61" },
                 ]}
               >
-                {item.amount}
+                {item.type === "expense" ? "-" : "+"}
+                {new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(item.amount)}
               </Text>
             </View>
           ))}

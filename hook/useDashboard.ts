@@ -12,6 +12,11 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
+const currencyFormatter = new Intl.NumberFormat("es-ES", {
+  style: "currency",
+  currency: "USD",
+});
+
 function useDashboard() {
   const router = useRouter();
   const user = useAuthSessionStore((state) => state.user);
@@ -20,6 +25,9 @@ function useDashboard() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [incomeTotal, setIncomeTotal] = useState<number>(0);
+  const [expenseTotal, setExpenseTotal] = useState<number>(0);
+  const [balanceTotal, setBalanceTotal] = useState<number>(0);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -27,7 +35,7 @@ function useDashboard() {
     router.replace("/login");
   };
 
-  const handleGetTransaccionesRecientes = async () => {
+  const handleGetRecentTransactions = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -39,18 +47,16 @@ function useDashboard() {
 
       const ahora = new Date();
 
-      const inicioDia = new Date(ahora);
-      inicioDia.setHours(0, 0, 0, 0);
-
-      const finDia = new Date(ahora);
-      finDia.setHours(23, 59, 59, 999);
+      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+      const finMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0);
+      finMes.setHours(23, 59, 59, 999);
 
       const transactionsRef = collection(db, "transactions");
       const q = query(
         transactionsRef,
         where("userId", "==", user.uid),
-        where("createdAt", ">=", Timestamp.fromDate(inicioDia)),
-        where("createdAt", "<=", Timestamp.fromDate(finDia)),
+        where("createdAt", ">=", Timestamp.fromDate(inicioMes)),
+        where("createdAt", "<=", Timestamp.fromDate(finMes)),
       );
 
       const querySnapshot = await getDocs(q);
@@ -59,9 +65,26 @@ function useDashboard() {
       querySnapshot.forEach((doc) => {
         t.push({ id: doc.id, ...doc.data() } as ITransaction);
       });
-      setTransactions(t);
+
+      const orderedTransactions = t.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.()?.getTime() ?? 0;
+        const dateB = b.createdAt?.toDate?.()?.getTime() ?? 0;
+        return dateB - dateA;
+      });
+
+      const incomes = orderedTransactions
+        .filter((item) => item.type === "income")
+        .reduce((sum, item) => sum + item.amount, 0);
+      const expenses = orderedTransactions
+        .filter((item) => item.type === "expense")
+        .reduce((sum, item) => sum + item.amount, 0);
+
+      setIncomeTotal(incomes);
+      setExpenseTotal(expenses);
+      setBalanceTotal(incomes - expenses);
+      setTransactions(orderedTransactions.slice(0, 5));
     } catch (err: unknown) {
-      let message = "No se pudo guardar el ingreso.";
+      let message = "No se pudo obtener el resumen del dashboard.";
       if (err instanceof Error) {
         message = err.message;
       }
@@ -73,7 +96,7 @@ function useDashboard() {
   };
 
   useEffect(() => {
-    handleGetTransaccionesRecientes();
+    handleGetRecentTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,8 +105,11 @@ function useDashboard() {
     error,
     isLoading,
     transactions,
+    formattedIncome: currencyFormatter.format(incomeTotal),
+    formattedExpense: currencyFormatter.format(expenseTotal),
+    formattedBalance: currencyFormatter.format(balanceTotal),
     handleLogout,
-    handleGetTransaccionesRecientes,
+    handleGetRecentTransactions,
   };
 }
 
