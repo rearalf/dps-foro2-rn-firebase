@@ -1,3 +1,4 @@
+import useAddIncome from "@/hook/useAddIncome";
 import styles from "@/styles/addIncomeStyles";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -5,6 +6,18 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddIncomeScreen() {
+  const {
+    monto,
+    fuente,
+    descripcion,
+    error,
+    isLoading,
+    handleSave,
+    handleMonto,
+    setFuente,
+    setDescripcion,
+  } = useAddIncome();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -24,6 +37,8 @@ export default function AddIncomeScreen() {
               placeholderTextColor="#8A8F99"
               keyboardType="numeric"
               style={styles.input}
+              value={monto}
+              onChangeText={handleMonto}
             />
           </View>
 
@@ -33,6 +48,8 @@ export default function AddIncomeScreen() {
               placeholder="Sueldo, freelance..."
               placeholderTextColor="#8A8F99"
               style={styles.input}
+              value={fuente}
+              onChangeText={setFuente}
             />
           </View>
 
@@ -44,11 +61,21 @@ export default function AddIncomeScreen() {
               multiline
               numberOfLines={3}
               style={[styles.input, styles.inputArea]}
+              value={descripcion}
+              onChangeText={setDescripcion}
             />
           </View>
 
-          <Pressable style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Guardar ingreso</Text>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <Pressable
+            style={styles.primaryButton}
+            onPress={handleSave}
+            disabled={isLoading}
+          >
+            <Text style={styles.primaryButtonText}>
+              {isLoading ? "Guardando..." : "Guardar ingreso"}
+            </Text>
           </Pressable>
 
           <Link href="/(tabs)/dashboard" asChild>

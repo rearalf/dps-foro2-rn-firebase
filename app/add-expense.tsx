@@ -1,3 +1,4 @@
+import useAddExpense from "@/hook/useAddExpense";
 import styles from "@/styles/addExpenseStyles";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -5,6 +6,18 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddExpenseScreen() {
+  const {
+    monto,
+    error,
+    isLoading,
+    categoria,
+    descripcion,
+    handleSave,
+    handleMonto,
+    handleCategoria,
+    handleDescripcion,
+  } = useAddExpense();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -24,6 +37,8 @@ export default function AddExpenseScreen() {
               placeholderTextColor="#8A8F99"
               keyboardType="numeric"
               style={styles.input}
+              value={monto}
+              onChangeText={handleMonto}
             />
           </View>
 
@@ -33,6 +48,8 @@ export default function AddExpenseScreen() {
               placeholder="Comida, transporte..."
               placeholderTextColor="#8A8F99"
               style={styles.input}
+              value={categoria}
+              onChangeText={handleCategoria}
             />
           </View>
 
@@ -44,11 +61,21 @@ export default function AddExpenseScreen() {
               multiline
               numberOfLines={3}
               style={[styles.input, styles.inputArea]}
+              value={descripcion}
+              onChangeText={handleDescripcion}
             />
           </View>
 
-          <Pressable style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Guardar gasto</Text>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <Pressable
+            style={styles.primaryButton}
+            onPress={handleSave}
+            disabled={isLoading}
+          >
+            <Text style={styles.primaryButtonText}>
+              {isLoading ? "Guardando..." : "Guardar gasto"}
+            </Text>
           </Pressable>
 
           <Link href="/(tabs)/dashboard" asChild>

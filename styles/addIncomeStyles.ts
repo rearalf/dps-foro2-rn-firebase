@@ -55,6 +55,11 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     minHeight: 96,
   },
+  errorText: {
+    color: "#B33131",
+    fontWeight: "600",
+    fontSize: 13,
+  },
   primaryButton: {
     marginTop: 4,
     height: 50,

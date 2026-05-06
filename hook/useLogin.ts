@@ -60,18 +60,27 @@ function useLogin() {
 
       await signInWithEmailAndPassword(auth, email.trim(), password);
       router.replace("/(tabs)/dashboard");
-    } catch (err: unknown) {
-      let message = "No se pudo iniciar sesion.";
-      if (err instanceof Error) {
-        if (err.message.includes("auth/invalid-credential")) {
-          message = "Correo o contrasena incorrectos";
-        } else if (err.message.includes("auth/too-many-requests")) {
-          message = "Demasiados intentos. Intente de nuevo mas tarde";
-        } else {
-          message = err.message;
-        }
+    } catch (err: any) {
+      let errorMessage = "Ocurrió un error inesperado.";
+
+      switch (err.code) {
+        case "auth/invalid-credential":
+          errorMessage = "El correo o la contraseña son incorrectos.";
+          break;
+        case "auth/user-not-found":
+          errorMessage = "No existe una cuenta con este correo.";
+          break;
+        case "auth/wrong-password":
+          errorMessage = "Contraseña incorrecta.";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Demasiados intentos fallidos. Intenta más tarde.";
+          break;
+        default:
+          errorMessage = err.message || "No se pudo iniciar sesión.";
       }
-      setError(message);
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
