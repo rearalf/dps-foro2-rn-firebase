@@ -1,84 +1,67 @@
+import useRecord from "@/hook/useRecord";
 import styles from "@/styles/recordStyles";
 import { StatusBar } from "expo-status-bar";
-import { ScrollView, Text, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const historyItems = [
-  {
-    id: "1",
-    title: "Sueldo",
-    category: "Ingreso",
-    date: "Hoy",
-    amount: "+$1,250.00",
-    color: "#1F7A6F",
-  },
-  {
-    id: "2",
-    title: "Comida",
-    category: "Gasto",
-    date: "Hoy",
-    amount: "-$18.50",
-    color: "#C24747",
-  },
-  {
-    id: "3",
-    title: "Transporte",
-    category: "Gasto",
-    date: "Ayer",
-    amount: "-$12.40",
-    color: "#C24747",
-  },
-  {
-    id: "4",
-    title: "Freelance",
-    category: "Ingreso",
-    date: "Ayer",
-    amount: "+$320.00",
-    color: "#1F7A6F",
-  },
-  {
-    id: "5",
-    title: "Internet",
-    category: "Gasto",
-    date: "Lunes",
-    amount: "-$29.90",
-    color: "#C24747",
-  },
-];
-
 export default function HistorialTabScreen() {
+  const {
+    error,
+    isLoading,
+    transactions,
+    formattedIncome,
+    formattedExpense,
+    handleGetTransactions,
+  } = useRecord();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleGetTransactions}
+          />
+        }
+      >
         <Text style={styles.title}>Historial</Text>
         <Text style={styles.subtitle}>Todos tus movimientos recientes</Text>
 
         <View style={styles.summaryRow}>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Total ingresos</Text>
-            <Text style={styles.incomeValue}>+$3,120.00</Text>
+            <Text style={styles.incomeValue}>+{formattedIncome}</Text>
           </View>
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Total gastos</Text>
-            <Text style={styles.expenseValue}>-$274.70</Text>
+            <Text style={styles.expenseValue}>-{formattedExpense}</Text>
           </View>
         </View>
 
         <View style={styles.listCard}>
-          {historyItems.map((item) => (
+          {transactions.map((item) => (
             <View key={item.id} style={styles.itemRow}>
               <View style={styles.leftColumn}>
-                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemTitle}>{item.category}</Text>
                 <Text style={styles.itemMeta}>
-                  {item.category} · {item.date}
+                  {item.formattedType} · {item.formattedDate}
                 </Text>
               </View>
-              <Text style={[styles.itemAmount, { color: item.color }]}>
-                {item.amount}
+              <Text style={[styles.itemAmount, { color: item.amountColor }]}>
+                {item.formattedAmount}
               </Text>
             </View>
           ))}
+
+          {!isLoading && transactions.length === 0 && !error ? (
+            <Text style={styles.emptyText}>
+              Todavia no hay movimientos registrados.
+            </Text>
+          ) : null}
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
       </ScrollView>
     </SafeAreaView>

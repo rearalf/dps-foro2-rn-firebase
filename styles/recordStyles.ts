@@ -78,6 +78,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
+  emptyText: {
+    color: "#758292",
+    fontSize: 14,
+    paddingVertical: 18,
+    textAlign: "center",
+  },
+  errorText: {
+    color: "#C24747",
+    fontSize: 14,
+    paddingTop: 14,
+    paddingBottom: 18,
+    textAlign: "center",
+  },
 });
 
 export default styles;
